@@ -128,6 +128,7 @@ abstract class PaginationViewModel<T : Any>(
                 "invited_answer",
                 "tab_list",
                 "feed_item_index_group",
+                "moments_recommend_followed_group",
             )
         ) {
             return@mapNotNull null

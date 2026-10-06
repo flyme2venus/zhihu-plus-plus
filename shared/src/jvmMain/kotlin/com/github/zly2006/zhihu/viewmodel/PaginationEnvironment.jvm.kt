@@ -22,6 +22,8 @@ import androidx.compose.runtime.remember
 import com.github.zly2006.zhihu.data.DataHolder
 import com.github.zly2006.zhihu.data.Feed
 import com.github.zly2006.zhihu.data.FeedDisplayItem
+import com.github.zly2006.zhihu.data.ZhihuAndroidApi
+import com.github.zly2006.zhihu.data.installZhihuCommonClientConfig
 import com.github.zly2006.zhihu.data.navDestination
 import com.github.zly2006.zhihu.data.target
 import com.github.zly2006.zhihu.desktop.DesktopHistoryStorage
@@ -55,6 +57,7 @@ import com.github.zly2006.zhihu.viewmodel.local.LocalRecommendationEngine
 import com.github.zly2006.zhihu.viewmodel.local.buildLocalRecommendationEngine
 import com.github.zly2006.zhihu.viewmodel.local.getLocalContentDatabase
 import io.ktor.client.HttpClient
+import io.ktor.client.plugins.api.createClientPlugin
 import io.ktor.client.request.setBody
 import io.ktor.http.contentType
 import kotlinx.coroutines.CancellationException
@@ -80,6 +83,14 @@ import io.ktor.http.ContentType as KtorContentType
 private val desktopContentFilterDb = getContentFilterDatabase()
 private var desktopPendingContentOpenIdentity: TrackedContentIdentity? = null
 private var desktopPendingContentOpenFrom: String? = null
+
+private val DESKTOP_ANDROID_API_HEADERS = createClientPlugin("ZhihuPPAndroidHeaders", { }) {
+    onRequest { request, _ ->
+        ZhihuAndroidApi.HEADERS.forEach { (name, value) ->
+            request.headers.append(name, value)
+        }
+    }
+}
 
 internal fun prepareDesktopPendingContentOpen(
     target: NavDestination,
@@ -125,6 +136,21 @@ class DesktopPaginationEnvironment(
     }
 
     override fun httpClient(): HttpClient = store.client.httpClient()
+
+    // 桌面端模拟安卓客户端调用 app 域接口（安卓端推荐、通知等），与
+    // AndroidPaginationEnvironment.mobileHomeFeedHttpClient 的行为保持一致：
+    // 不做 web 签名，依赖安卓 UA + x-app-* 请求头 + 登录 cookies。
+    override fun mobileHomeFeedHttpClient(): HttpClient {
+        val session = store.session
+        return HttpClient {
+            installZhihuCommonClientConfig(
+                cookies = session.cookies,
+                userAgent = ZhihuAndroidApi.USER_AGENT,
+                onCookieChanged = { store.save(store.session) },
+            )
+            install(DESKTOP_ANDROID_API_HEADERS)
+        }
+    }
 
     override fun xsrfToken(): String = store.session.cookies["_xsrf"] ?: ""
 

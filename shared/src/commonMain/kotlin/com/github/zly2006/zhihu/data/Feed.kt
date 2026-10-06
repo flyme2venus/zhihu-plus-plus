@@ -76,11 +76,16 @@ sealed interface Feed {
             personSerializer.serialize(encoder, value)
         }
 
-        override fun deserialize(decoder: Decoder) = try {
+        override fun deserialize(decoder: Decoder): Person? = try {
             personSerializer.deserialize(decoder)
         } catch (_: Exception) {
-            // consume a string -- legacy api compatibility
-            decoder.decodeString()
+            // 旧接口的 author 是字符串（consume a string -- legacy api compatibility）；
+            // moments 等新接口的 author 是字段有出入的 JsonObject，按字符串消费会二次抛错，
+            // 导致整条 feed 解码失败被静默丢弃，这里返回 null 保住整条 feed。
+            try {
+                decoder.decodeString()
+            } catch (_: Exception) {
+            }
             null
         }
     }
@@ -397,8 +402,9 @@ class AdvertisementFeed(
 class GroupFeed(
     val id: String = "",
     val attachedInfo: String = "",
-    val brief: String,
-    val groupText: String,
+    // moments 分组条目只有 style_type + list，没有 brief/group_text，给默认值避免整条被丢弃
+    val brief: String = "",
+    val groupText: String = "",
     val list: List<CommonFeed>,
     val styleType: Int = 0,
 ) : Feed
@@ -481,12 +487,13 @@ data class MomentsFeed(
 data class Person(
     val id: String,
     val url: String,
-    val userType: String,
+    // 服务端在部分场景（如 topstory 的 pin feed）会省略这两个展示字段，给默认值避免整条 feed 丢失
+    val userType: String = "",
     val urlToken: String? = null,
     val name: String,
     @Serializable(HTMLDecoder::class)
     val headline: String,
-    val avatarUrl: String,
+    val avatarUrl: String = "",
     val isOrg: Boolean = false,
     val gender: Int = 0, // todo: 0做默认合适吗？
     @OptIn(ExperimentalSerializationApi::class)

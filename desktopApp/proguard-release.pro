@@ -33,6 +33,17 @@
     *;
 }
 
+# Coil 的网络 fetcher 仅通过 META-INF/services/coil3.util.FetcherServiceLoaderTarget
+# 在运行期反射加载，shrink 阶段静态分析不可达会被整包删除；服务文件本身仍会保留，
+# 运行时加载不到目标类 → 默认 ImageLoader 没有任何网络 fetcher → 所有网络图片静默失败。
+-keep class * implements coil3.util.FetcherServiceLoaderTarget {
+    *;
+}
+
+-keep class coil3.network.ktor3.** {
+    *;
+}
+
 -keep interface com.github.zly2006.zhihu.viewmodel.PaginationEnvironment {
     *;
 }
