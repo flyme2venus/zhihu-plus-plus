@@ -36,7 +36,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
+        # fork 定制：只构建 Windows 端
+        os: [windows-latest]
     steps:
       - uses: actions/checkout@v4
 
@@ -181,6 +182,8 @@ jobs:
           path: desktopApp/build/upload/zhihu++-desktop-${{ steps.desktop_suffix.outputs.suffix }}.app.zip
 
   build:
+    # fork 定制：只构建 Windows 端，跳过 Android
+    if: false
     name: Build Android App
     runs-on: ubuntu-latest
     steps:
@@ -277,7 +280,7 @@ jobs:
 
   publish:
     name: Collect and publish builds
-    needs: [build-desktop, build]
+    needs: [build-desktop]
     runs-on: ubuntu-latest
     steps:
       - name: Set current date as env variable
@@ -287,6 +290,7 @@ jobs:
         run: echo "repository_name=${GITHUB_REPOSITORY#*/}" >> "$GITHUB_ENV"
 
       - name: Download Android apps
+        if: false
         uses: actions/download-artifact@v4
         with:
           name: ${{ inputs.name }}-android
@@ -454,11 +458,6 @@ jobs:
 
             ${{ steps.release_notes.outputs.result }}
           files: |
-            app/build/upload/zhihu++-lite.apk
-            app/build/upload/mapping-lite.zip
-            app/build/upload/zhihu++-full.apk
-            app/build/upload/zhihu++-desktop-*.AppImage
             app/build/upload/zhihu++-desktop-*.msi
-            app/build/upload/zhihu++-desktop-*.app.zip
           fail_on_unmatched_files: true
           prerelease: false
