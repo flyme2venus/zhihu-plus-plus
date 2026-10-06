@@ -44,6 +44,12 @@
     *;
 }
 
+# JNA 通过反射解析接口方法名映射 native 函数（DWM 标题栏上色），
+# 并在运行期解包 jnidispatch.dll，整包保留避免 shrink 破坏。
+-keep class com.sun.jna.** {
+    *;
+}
+
 -keep interface com.github.zly2006.zhihu.viewmodel.PaginationEnvironment {
     *;
 }

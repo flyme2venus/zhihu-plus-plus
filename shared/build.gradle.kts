@@ -225,6 +225,8 @@ kotlin {
             implementation("com.google.zxing:core:3.5.4")
             implementation("io.ktor:ktor-client-cio:3.5.0")
             implementation("org.jetbrains.kotlinx:kotlinx-coroutines-swing:1.11.0")
+            // JNA 用于 Windows DWM 标题栏上色（DesktopWindowChrome）
+            implementation("net.java.dev.jna:jna:5.6.0")
             // JavaFX WebView 用于桌面端内嵌风控验证页面。
             // JavaFX 模块依赖关系：
             //   javafx-web → javafx-controls → javafx-graphics → javafx-base

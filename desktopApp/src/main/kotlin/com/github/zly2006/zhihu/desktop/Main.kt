@@ -17,10 +17,15 @@
 
 package com.github.zly2006.zhihu.desktop
 
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.github.zly2006.zhihu.theme.DesktopThemeSettings
+import com.github.zly2006.zhihu.theme.DesktopWindowChrome
+import com.github.zly2006.zhihu.theme.ThemeManager
 import com.github.zly2006.zhihu.theme.ZhihuTheme
 import com.github.zly2006.zhihu.ui.DesktopZhihuMain
 
@@ -33,6 +38,16 @@ fun main() {
             title = "Zhihu++",
             icon = painterResource("desktop-icon.png"),
         ) {
+            val darkTheme = ThemeManager.isDarkTheme()
+            val isAmoled = ThemeManager.getIsAmoled()
+            val backgroundArgb = (if (isAmoled && darkTheme) Color.Black else ThemeManager.getBackgroundColor()).toArgb()
+            LaunchedEffect(darkTheme, isAmoled, backgroundArgb) {
+                DesktopWindowChrome.applyCaptionColor(
+                    window = window,
+                    backgroundArgb = backgroundArgb,
+                    dark = darkTheme,
+                )
+            }
             ZhihuTheme {
                 DesktopZhihuMain()
             }
