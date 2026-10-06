@@ -22,6 +22,7 @@ import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
 import com.github.zly2006.zhihu.theme.DesktopThemeSettings
 import com.github.zly2006.zhihu.theme.ZhihuTheme
+import com.github.zly2006.zhihu.ui.DesktopWindowFrame
 import com.github.zly2006.zhihu.ui.DesktopZhihuMain
 
 fun main() {
@@ -32,9 +33,15 @@ fun main() {
             onCloseRequest = ::exitApplication,
             title = "Zhihu++",
             icon = painterResource("desktop-icon.png"),
+            undecorated = true,
         ) {
             ZhihuTheme {
-                DesktopZhihuMain()
+                DesktopWindowFrame(
+                    icon = painterResource("desktop-icon.png"),
+                    onCloseRequest = ::exitApplication,
+                ) {
+                    DesktopZhihuMain()
+                }
             }
         }
     }
