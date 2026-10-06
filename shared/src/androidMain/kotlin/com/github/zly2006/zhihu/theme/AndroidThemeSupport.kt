@@ -74,6 +74,7 @@ object AndroidThemeSettings {
             backgroundColorLight = settings.getInt("backgroundColorLight", 0xFFFFFFFF.toInt()),
             backgroundColorDark = settings.getInt("backgroundColorDark", 0xFF121212.toInt()),
             themeMode = themeMode,
+            isAmoled = settings.getBoolean("isAmoled", false),
         )
     }
 

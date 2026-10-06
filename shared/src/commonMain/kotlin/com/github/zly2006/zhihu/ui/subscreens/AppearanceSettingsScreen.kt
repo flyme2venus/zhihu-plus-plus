@@ -462,6 +462,20 @@ fun AppearanceSettingsScreen(
                     bringIntoViewRequester = requesterFor("dynamicColor"),
                 )
 
+                SettingItemWithSwitch(
+                    title = { Text("纯黑模式（AMOLED）") },
+                    description = { Text("深色模式下将所有表面设为纯黑，适合 OLED 显示器。\n开启后深色的自定义背景颜色不再生效。") },
+                    checked = ThemeManager.getIsAmoled(),
+                    onCheckedChange = {
+                        ThemeManager.setIsAmoled(it)
+                        settings.putBoolean("isAmoled", it)
+                        userMessages.showShortMessage("已${if (it) "启用" else "禁用"}纯黑模式")
+                    },
+                    settingKey = "amoled",
+                    highlightedKey = settingKey,
+                    bringIntoViewRequester = requesterFor("amoled"),
+                )
+
                 var showColorPicker by remember { mutableStateOf(false) }
                 val customColor = ThemeManager.getCustomColor()
 

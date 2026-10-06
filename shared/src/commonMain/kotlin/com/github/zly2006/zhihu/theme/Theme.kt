@@ -49,8 +49,8 @@ fun ZhihuTheme(
     content: @Composable () -> Unit,
 ) {
     val useDynamicColor = ThemeManager.getUseDynamicColor()
-    val customBackgroundColor = ThemeManager.getBackgroundColor()
     val darkTheme = ThemeManager.isDarkTheme()
+    val isAmoled = darkTheme && ThemeManager.getIsAmoled()
     val platformDynamicColorScheme = platformDynamicColorScheme(darkTheme)
 
     val baseColorScheme = when {
@@ -59,17 +59,34 @@ fun ZhihuTheme(
             dynamicColorScheme(
                 seedColor = ThemeManager.getCustomColor(),
                 isDark = darkTheme,
-                isAmoled = false,
+                isAmoled = isAmoled,
             )
         }
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }
 
-    val colorScheme = baseColorScheme.copy(
-        background = customBackgroundColor,
-        surface = customBackgroundColor,
-    )
+    // 纯黑模式下覆盖整个 surface 角色族（含 surfaceContainer 系列），
+    // 并让自定义背景颜色让位，否则卡片等组件仍是深灰，达不到 OLED 纯黑。
+    val colorScheme = if (isAmoled) {
+        baseColorScheme.copy(
+            background = Color.Black,
+            surface = Color.Black,
+            surfaceVariant = Color.Black,
+            surfaceDim = Color.Black,
+            surfaceBright = Color.Black,
+            surfaceContainerLowest = Color.Black,
+            surfaceContainerLow = Color.Black,
+            surfaceContainer = Color.Black,
+            surfaceContainerHigh = Color.Black,
+            surfaceContainerHighest = Color.Black,
+        )
+    } else {
+        baseColorScheme.copy(
+            background = ThemeManager.getBackgroundColor(),
+            surface = ThemeManager.getBackgroundColor(),
+        )
+    }
 
     PlatformSystemBarEffect(darkTheme)
 

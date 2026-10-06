@@ -20,11 +20,13 @@ package com.github.zly2006.zhihu.desktop
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
+import com.github.zly2006.zhihu.theme.DesktopThemeSettings
 import com.github.zly2006.zhihu.theme.ZhihuTheme
 import com.github.zly2006.zhihu.ui.DesktopZhihuMain
 
 fun main() {
     System.setProperty("java.awt.im.style", "below-the-spot")
+    DesktopThemeSettings.initialize()
     application {
         Window(
             onCloseRequest = ::exitApplication,

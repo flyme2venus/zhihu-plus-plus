@@ -30,6 +30,7 @@ data class ThemeSnapshot(
     val backgroundColorLight: Int = 0xFFFFFFFF.toInt(),
     val backgroundColorDark: Int = 0xFF121212.toInt(),
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
+    val isAmoled: Boolean = false,
 )
 
 object ThemeManager {
@@ -38,9 +39,17 @@ object ThemeManager {
     private val backgroundColorLight = mutableIntStateOf(0xFFFFFFFF.toInt())
     private val backgroundColorDark = mutableIntStateOf(0xFF121212.toInt())
     private val themeMode = mutableStateOf(ThemeMode.SYSTEM)
+    private val isAmoled = mutableStateOf(false)
 
     @Composable
     fun getUseDynamicColor(): Boolean = useDynamicColor.value
+
+    @Composable
+    fun getIsAmoled(): Boolean = isAmoled.value
+
+    fun setIsAmoled(value: Boolean) {
+        isAmoled.value = value
+    }
 
     @Composable
     fun getCustomColor(): Color = Color(customColorInt.intValue)
@@ -71,6 +80,7 @@ object ThemeManager {
         backgroundColorLight.intValue = snapshot.backgroundColorLight
         backgroundColorDark.intValue = snapshot.backgroundColorDark
         themeMode.value = snapshot.themeMode
+        isAmoled.value = snapshot.isAmoled
     }
 
     fun snapshot(): ThemeSnapshot = ThemeSnapshot(
@@ -79,6 +89,7 @@ object ThemeManager {
         backgroundColorLight = backgroundColorLight.intValue,
         backgroundColorDark = backgroundColorDark.intValue,
         themeMode = themeMode.value,
+        isAmoled = isAmoled.value,
     )
 
     fun setUseDynamicColor(useDynamic: Boolean) {
