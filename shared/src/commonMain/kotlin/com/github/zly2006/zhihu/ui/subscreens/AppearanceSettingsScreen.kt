@@ -96,6 +96,7 @@ import com.github.zly2006.zhihu.navigation.MyCollections
 import com.github.zly2006.zhihu.navigation.OnlineHistory
 import com.github.zly2006.zhihu.navigation.TopLevelDestination
 import com.github.zly2006.zhihu.platform.isAnswerSwipeSupported
+import com.github.zly2006.zhihu.platform.isJvm
 import com.github.zly2006.zhihu.platform.isPageTurnSupported
 import com.github.zly2006.zhihu.platform.platformBottomBarItemLimit
 import com.github.zly2006.zhihu.platform.rememberSettingsStore
@@ -474,6 +475,23 @@ fun AppearanceSettingsScreen(
                     settingKey = "amoled",
                     highlightedKey = settingKey,
                     bringIntoViewRequester = requesterFor("amoled"),
+                )
+
+                var pullToRefreshEnabled by remember {
+                    mutableStateOf(settings.getBoolean("pullToRefreshEnabled", !isJvm))
+                }
+                SettingItemWithSwitch(
+                    title = { Text("下拉刷新") },
+                    description = { Text("在列表顶部向下拖动刷新内容。\n桌面端默认关闭（鼠标拖动易误触发），移动端默认开启。") },
+                    checked = pullToRefreshEnabled,
+                    onCheckedChange = {
+                        pullToRefreshEnabled = it
+                        settings.putBoolean("pullToRefreshEnabled", it)
+                        userMessages.showShortMessage("已${if (it) "启用" else "禁用"}下拉刷新")
+                    },
+                    settingKey = "pullToRefresh",
+                    highlightedKey = settingKey,
+                    bringIntoViewRequester = requesterFor("pullToRefresh"),
                 )
 
                 var showColorPicker by remember { mutableStateOf(false) }
