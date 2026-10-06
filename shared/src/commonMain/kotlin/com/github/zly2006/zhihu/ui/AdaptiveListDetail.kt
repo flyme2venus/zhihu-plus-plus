@@ -101,6 +101,8 @@ internal fun ListDetailDivider(
         modifier = modifier
             .width(LIST_DETAIL_DIVIDER_WIDTH)
             .fillMaxHeight()
+            // 分隔条两侧不绘制会透出 AWT 窗口默认白底，这里铺上主题背景
+            .background(MaterialTheme.colorScheme.background)
             .testTag("list_detail_divider")
             .semantics {
                 contentDescription = "调整列表和详情宽度"

@@ -47,6 +47,14 @@ fun main() {
                     backgroundArgb = backgroundArgb,
                     dark = darkTheme,
                 )
+                // AWT 窗口默认白底：Compose 未绘制到的区域（如分栏间隔、首帧前）会透白
+                val awtBackground = java.awt.Color(
+                    (backgroundArgb shr 16) and 0xFF,
+                    (backgroundArgb shr 8) and 0xFF,
+                    backgroundArgb and 0xFF,
+                )
+                window.contentPane?.background = awtBackground
+                window.background = awtBackground
             }
             ZhihuTheme {
                 DesktopZhihuMain()
