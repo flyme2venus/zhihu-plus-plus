@@ -257,8 +257,11 @@ jobs:
       - name: Move files
         run: |
           mkdir -p app/build/upload
-          mv app/build/outputs/apk/full/release/app-full-release.apk app/build/upload/zhihu++-full.apk
-          mv app/build/outputs/apk/lite/release/app-lite-release.apk app/build/upload/zhihu++-lite.apk
+          # fork 没有签名 secrets 时 AGP 产物带 -unsigned 后缀，这里做兼容
+          mv app/build/outputs/apk/full/release/app-full-release.apk app/build/upload/zhihu++-full.apk 2>/dev/null || \
+            mv app/build/outputs/apk/full/release/app-full-release-unsigned.apk app/build/upload/zhihu++-full.apk
+          mv app/build/outputs/apk/lite/release/app-lite-release.apk app/build/upload/zhihu++-lite.apk 2>/dev/null || \
+            mv app/build/outputs/apk/lite/release/app-lite-release-unsigned.apk app/build/upload/zhihu++-lite.apk
       - name: Compress lite mapping file
         if: ${{ inputs.minify }}
         run: |
